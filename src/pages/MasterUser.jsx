@@ -1,16 +1,22 @@
-import React, {useState, useEffect, useRef} from 'react';
-import { useNavigate } from 'react-router-dom';
-import {login, logout, checkToken} from '../api/Auth';
-import { userList, addUser, rmUser, getUserPk, updateUser} from '../api/User';
+import React, {useState, useEffect, useRef} from 'react'
+import { useNavigate } from 'react-router-dom'
+import {login, logout, checkToken} from '../api/Auth'
+import { userList, addUser, rmUser, getUserPk, updateUser} from '../api/User'
+import SidePanel from '../components/SidePanel'
+import Setting from '../components/Setting'
+import { getImage } from '../api/Setting'
 
 function MasterUser(){
-  const navigate = useNavigate();
-  const [userData, setUserData] = useState([]);
-  const [tableUser, setTableUser] = useState();
-  const [userId, setUserId] = useState("");
-  const [fullname, setFullname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate()
+  const baseUrl = "http://127.0.0.1:8000/uploads"
+  const [userData, setUserData] = useState([])
+  const [tableUser, setTableUser] = useState()
+  const [userId, setUserId] = useState("")
+  const [fullname, setFullname] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  
+  const [background, setBackground] = useState("")
 
   const logOutHandler = () => {
     logout().then((res) => {
@@ -22,14 +28,14 @@ function MasterUser(){
 
   const addUserHandler = (e) => {
     e.preventDefault()
-    const formData = new FormData();
-    formData.append('user_fullname', fullname);
-    formData.append('user_email', email);
-    formData.append('user_password', password);
+    const formData = new FormData()
+    formData.append('user_fullname', fullname)
+    formData.append('user_email', email)
+    formData.append('user_password', password)
     addUser(formData).then((res) => {
       if(res.responseCode === 200000){
         setUserData(res.responseData)
-        window.$('#mdl_add_user').modal('hide');
+        window.$('#mdl_add_user').modal('hide')
         setFullname('')
         setEmail('')
         setPassword('')
@@ -58,15 +64,15 @@ function MasterUser(){
 
   const updateUserHandler = (e) => {
     e.preventDefault()
-    const formData = new FormData();
-    formData.append('user_id', userId);
-    formData.append('user_fullname', fullname);
-    formData.append('user_email', email);
-    formData.append('user_password', password);
+    const formData = new FormData()
+    formData.append('user_id', userId)
+    formData.append('user_fullname', fullname)
+    formData.append('user_email', email)
+    formData.append('user_password', password)
     updateUser(formData).then((res) => {
       if(res.responseCode === 200000){
         setUserData(res.responseData)
-        window.$('#mdl_edit_user').modal('hide');
+        window.$('#mdl_edit_user').modal('hide')
         setFullname('')
         setEmail('')
         setPassword('')
@@ -77,7 +83,7 @@ function MasterUser(){
   const reqUser = async () => {
     userList().then((res) => {
       setUserData(res.responseData)
-    });
+    })
   }
 
   useEffect(function() {
@@ -86,6 +92,12 @@ function MasterUser(){
         window.location.replace('/login')
       }else{
         reqUser()
+      }
+    })
+
+    getImage().then((res) => {
+      if(res.responseCode === 200000){
+        setBackground(baseUrl+'/'+res.responseData.background)
       }
     });
   },[])
@@ -110,36 +122,8 @@ function MasterUser(){
 
   return (
     <div id="wrapper">
-      {/* Sidebar */}
-      <ul className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-        {/* Sidebar - Brand */}
-        <a className="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-          <div className="sidebar-brand-icon rotate-n-15">
-            <i className="fas fa-laugh-wink" />
-          </div>
-          <div className="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
-        </a>
-        {/* Divider */}
-        <hr className="sidebar-divider my-0" />
-        {/* Nav Item - Dashboard */}
-        <li className="nav-item active">
-          <a className="nav-link" href="/dashboard">
-            <i className="fas fa-fw fa-tachometer-alt" />
-            <span>Dashboard</span></a>
-        </li>
-        <li className="nav-item active">
-          <a className="nav-link" href="/master-pengguna">
-            <i className="fas fa-fw fa-tachometer-alt" />
-            <span>Master Pengguna</span></a>
-        </li>
-        <li className="nav-item active">
-          <a className="nav-link" href="#" onClick={logOutHandler}>
-            <i className="fas fa-fw fa-tachometer-alt" />
-            <span>Logout</span></a>
-        </li>
-      </ul>
-
-      <div id="content-wrapper" className="d-flex flex-column">
+      <SidePanel/>
+      <div id="content-wrapper" className="d-flex flex-column" style={{ backgroundImage: `url("${background}")`, backgroundSize: "cover" }}>
         <div id="content">
           <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
             <button id="sidebarToggleTop" className="btn btn-link d-md-none rounded-circle mr-3">
@@ -256,6 +240,7 @@ function MasterUser(){
         </div>
       </div>
 
+      <Setting/>
     </div>
   )
 }
