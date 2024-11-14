@@ -1,14 +1,14 @@
-import React, {useState, useEffect, useRef} from 'react'
-import { useNavigate } from 'react-router-dom'
-import {login, logout, checkToken} from '../api/Auth'
+import React, { useState, useEffect } from 'react'
+import { checkToken } from '../api/Auth'
 import { userList, addUser, rmUser, getUserPk, updateUser} from '../api/User'
 import SidePanel from '../components/SidePanel'
 import Setting from '../components/Setting'
 import { getImage } from '../api/Setting'
 
 function MasterUser(){
-  const navigate = useNavigate()
   const baseUrl = "http://127.0.0.1:8000/uploads"
+  const name = localStorage.getItem('user_fullname')
+  
   const [userData, setUserData] = useState([])
   const [tableUser, setTableUser] = useState()
   const [userId, setUserId] = useState("")
@@ -17,14 +17,6 @@ function MasterUser(){
   const [password, setPassword] = useState("")
   
   const [background, setBackground] = useState("")
-
-  const logOutHandler = () => {
-    logout().then((res) => {
-      if(res.responseCode === 200000){
-        navigate('/login')
-      }
-    })
-  };
 
   const addUserHandler = (e) => {
     e.preventDefault()
@@ -89,17 +81,17 @@ function MasterUser(){
   useEffect(function() {
     checkToken().then((res) => {
       if(res.responseCode !== 200000){
-        window.location.replace('/login')
+        window.location.replace('/')
       }else{
         reqUser()
+
+        getImage().then((res) => {
+          if(res.responseCode === 200000){
+            setBackground(baseUrl+'/'+res.responseData.background)
+          }
+        });
       }
     })
-
-    getImage().then((res) => {
-      if(res.responseCode === 200000){
-        setBackground(baseUrl+'/'+res.responseData.background)
-      }
-    });
   },[])
 
   useEffect(function() {
@@ -131,8 +123,8 @@ function MasterUser(){
             </button>
             <ul className="navbar-nav ml-auto">
               <li className="nav-item dropdown no-arrow">
-                <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span className="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button">
+                <span className="mr-2 d-none d-lg-inline text-gray-600 small">{name}</span>
                   <img className="img-profile rounded-circle" src="/assets/images/undraw_profile.svg" />
                 </a>
               </li>

@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getMenu, getImage } from '../api/Setting'
+import {logout} from '../api/Auth'
 
 function SidePanel(){
   const baseUrl = "http://127.0.0.1:8000/uploads"
@@ -14,6 +15,14 @@ function SidePanel(){
     console.log('oke')
     window.$('#mdl_setting').modal('show')
   }
+
+  const logOutHandler = () => {
+    logout().then((res) => {
+      if(res.responseCode === 200000){
+        navigate('/')
+      }
+    })
+  };
 
   useEffect(function() {
     getMenu().then((res) => {
@@ -32,10 +41,18 @@ function SidePanel(){
   useEffect(function() {
     setViewMenu(
       listMenu.map((row, index) => {
-        if(row.name === "Pengaturan Tampilan"){
+        if(row.id === 4){
           return (
             <li className="nav-item active" key={index}>
               <a className="nav-link" href='#' onClick={settingHandler}>
+                <i className={'fas fa-fw '+row.default_icon} />
+                <span>{row.name}</span></a>
+            </li>
+          )
+        }else if(row.id === 3){
+          return (
+            <li className="nav-item active" key={index}>
+              <a className="nav-link" href='#' onClick={logOutHandler}>
                 <i className={'fas fa-fw '+row.default_icon} />
                 <span>{row.name}</span></a>
             </li>

@@ -29,6 +29,11 @@ export const userList = async () => {
   return req.data
 }
 
+export const userOnline = async () => {
+  const req = await axios.get(`${baseUrl}/user-online`, config)
+  return req.data
+}
+
 export const addUser = async (formData) => {
   try{
     const reqAdd = await axios.post(`${baseUrl}/add-user`, formData, config)

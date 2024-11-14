@@ -7,6 +7,7 @@ function Login(){
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const inputRef = useRef(null)
+  const [validation, setValidation] = useState("")
 
   const loginHandler = (e) => {
     e.preventDefault()
@@ -20,7 +21,7 @@ function Login(){
       if(res.responseCode === 200000){
         window.location.replace('/dashboard')
       }else{
-        // setValidation(res.responseMessage)
+        setValidation(res.responseMessage)
         console.log(res)
         inputRef.current.focus()
       }
@@ -31,7 +32,7 @@ function Login(){
     logout().then((res) => {
       console.log(res.responseCode)
       if(res.responseCode === 200000){
-        navigate('/login')
+        navigate('/')
       }
     })
   };
@@ -49,9 +50,14 @@ function Login(){
               <span className="login100-form-title p-b-26">
                 WELCOME
               </span>
-              <span className="login100-form-title p-b-48">
+              <span className="login100-form-title p-b-26">
                 <i className="zmdi zmdi-font" />
               </span>
+              <div className="text-center" role="alert">
+                {
+                  validation !== "" ? (<div className="mb-4 fs-14 text-danger">{validation}</div>) : ''
+                }
+              </div>
               <div className="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
                 <input className="input100" type="text" ref={inputRef} value={email} onChange={(e) => setEmail(e.target.value)} required/>
                 <span className="focus-input100" data-placeholder="Email" />
@@ -76,10 +82,7 @@ function Login(){
                   Don’t have an account? 
                 </span>
                 <a className="txt2" href="/assets/#">
-                  Sign Up |
-                </a>
-                <a href="#" onClick={logOutHandler} className="txt2">
-                   Logout
+                  Sign Up
                 </a>
               </div>
             </form>
